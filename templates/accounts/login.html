@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Login – Learnova{% endblock %}
+{% block extra_css %}<style>body{background:#f0eeff;}</style>{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-box">
+
+    <!-- Left branding panel -->
+    <div class="auth-panel">
+      <h2>📚 Learnova</h2>
+      <p>Your collaborative student learning community. Find your tribe, pick a topic, and grow together.</p>
+      <ul class="auth-features">
+        <li>✅ Join topic-based study rooms</li>
+        <li>✅ Discuss and share knowledge</li>
+        <li>✅ Connect with fellow learners</li>
+        <li>✅ Track your activity</li>
+      </ul>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="auth-form-panel">
+      <h2>Welcome back</h2>
+      <p class="switch-link">
+        Don't have an account? <a href="{% url 'register' %}">Sign up free</a>
+      </p>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Your username" required autofocus>
+          {% if form.username.errors %}
+          <div class="form-error">{{ form.username.errors.0 }}</div>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Your password" required>
+          {% if form.password.errors %}
+          <div class="form-error">{{ form.password.errors.0 }}</div>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Login →</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

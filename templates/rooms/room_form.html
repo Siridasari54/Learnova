@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{% if page == 'create' %}Create Room{% else %}Edit Room{% endif %} – Learnova{% endblock %}
+
+{% block content %}
+<div class="page-wrapper" style="max-width: 560px; margin: 0 auto;">
+  <div class="form-card">
+    <h2>{% if page == 'create' %}🚀 Create a Study Room{% else %}✏️ Edit Room{% endif %}</h2>
+    <p class="subtitle">
+      {% if page == 'create' %}Start a new collaborative learning space.
+      {% else %}Update the details for this room.{% endif %}
+    </p>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label>Topic <span style="color:red;">*</span></label>
+        <input type="text" name="topic_name" value="{{ form.topic_name.value|default:'' }}"
+               placeholder="e.g. Python, Machine Learning, Web Dev..." list="topic-list" required>
+        <datalist id="topic-list">
+          {% for topic in topics %}<option value="{{ topic.name }}">{% endfor %}
+        </datalist>
+        <div class="form-hint">Select from the list or type a new topic.</div>
+        {% if form.topic_name.errors %}<div class="form-error">{{ form.topic_name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label>Room Name <span style="color:red;">*</span></label>
+        <input type="text" name="name" value="{{ form.name.value|default:'' }}"
+               placeholder="Give your room a clear name" required>
+        {% if form.name.errors %}<div class="form-error">{{ form.name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" placeholder="What will you study here? (optional)">{{ form.description.value|default:'' }}</textarea>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+        {% if page == 'edit' %}
+        <a href="{% url 'room_detail' room.pk %}" class="btn btn-outline">Cancel</a>
+        {% else %}
+        <a href="{% url 'home' %}" class="btn btn-outline">Cancel</a>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">
+          {% if page == 'create' %}Create Room{% else %}Save Changes{% endif %}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
