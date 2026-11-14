@@ -1,0 +1,149 @@
+/* profile.css - User profile and edit profile pages */
+
+.profile-wrapper {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Profile card (left column) */
+.profile-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 80px;
+}
+
+.profile-avatar-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--purple);
+}
+
+.profile-avatar-initials {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  color: white;
+  font-size: 2.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--purple);
+}
+
+.profile-edit-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: white;
+  border: 2px solid var(--purple);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--purple);
+}
+
+.profile-edit-btn:hover { background: var(--purple-light); text-decoration: none; }
+
+.profile-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.profile-username {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.profile-bio {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-bottom: 14px;
+}
+
+.profile-stat {
+  text-align: center;
+}
+
+.profile-stat .num {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--purple);
+}
+
+.profile-stat .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Profile content (right column) */
+.profile-content { display: flex; flex-direction: column; gap: 20px; }
+
+.profile-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.profile-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Recent messages in profile */
+.profile-msg-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.profile-msg-item:last-child { border-bottom: none; }
+.profile-msg-item .room-ref { color: var(--purple); font-weight: 600; }
+.profile-msg-item .msg-body { color: var(--text-muted); font-style: italic; margin-top: 2px; }
+.profile-msg-item .msg-time { color: var(--text-muted); font-size: 0.75rem; }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .profile-wrapper { grid-template-columns: 1fr; }
+  .profile-card { position: static; }
+}
