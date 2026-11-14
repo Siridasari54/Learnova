@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile – Learnova{% endblock %}
+
+{% block content %}
+<div class="page-wrapper" style="max-width: 600px; margin: 0 auto;">
+  <div class="form-card">
+    <h2>✏️ Edit Profile</h2>
+    <p class="subtitle">Update your personal information and photo.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" placeholder="First name">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" placeholder="Last name">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="your@email.com">
+        {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label>Bio</label>
+        <textarea name="bio" placeholder="Tell us a bit about yourself...">{{ form.bio.value|default:'' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Profile Photo</label>
+        {% if form.instance.avatar %}
+        <img src="{{ form.instance.avatar.url }}" alt="Current photo"
+             style="width:60px; height:60px; border-radius:50%; object-fit:cover; margin-bottom:8px; display:block;">
+        {% endif %}
+        <input type="file" name="avatar" accept="image/*">
+        <div class="form-hint">JPG, PNG up to 2MB. Recommended 200×200px.</div>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+        <a href="{% url 'profile' username=request.user.username %}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

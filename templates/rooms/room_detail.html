@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}{{ room.name }} – Learnova{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <span>›</span>
+    {% if room.topic %}<a href="{% url 'home' %}?topic={{ room.topic.name }}">{{ room.topic.name }}</a><span>›</span>{% endif %}
+    <span>{{ room.name }}</span>
+  </div>
+
+  <div class="room-detail-wrapper">
+
+    <!-- Left: Room info + Discussion -->
+    <div>
+      <!-- Room Header -->
+      <div class="room-header-box">
+        {% if room.topic %}<span class="room-card-topic">{{ room.topic.name }}</span>{% endif %}
+        <h1>{{ room.name }}</h1>
+        {% if room.description %}<p>{{ room.description }}</p>{% endif %}
+
+        <div class="room-meta-row">
+          <span>🏠 Hosted by
+            <a href="{% url 'profile' username=room.host.username %}">{{ room.host.username }}</a>
+          </span>
+          <span>👥 {{ room.member_count }} members</span>
+          <span>💬 {{ room.message_count }} messages</span>
+        </div>
+
+        <div class="room-actions" style="margin-top:14px;">
+          {% if is_host %}
+            <a href="{% url 'edit_room' room.pk %}" class="btn btn-outline btn-sm">✏️ Edit</a>
+            <a href="{% url 'delete_room' room.pk %}" class="btn btn-danger btn-sm">🗑️ Delete</a>
+          {% elif user.is_authenticated %}
+            {% if is_member %}
+              <a href="{% url 'leave_room' room.pk %}" class="btn btn-outline btn-sm">Leave Room</a>
+            {% else %}
+              <a href="{% url 'join_room' room.pk %}" class="btn btn-primary btn-sm">🎓 Join Room</a>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Login to Join</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Discussion -->
+      <div class="discussion-box">
+        <div class="discussion-header">💬 Discussion</div>
+
+        <div class="messages-list" id="msgList">
+          {% if room_messages %}
+            {% for msg in room_messages %}
+            <div class="message-item">
+              <div class="msg-avatar">
+                {% if msg.user.profile.avatar %}<img src="{{ msg.user.profile.avatar.url }}" alt="">
+                {% else %}{{ msg.user.username|first|upper }}{% endif %}
+              </div>
+              <div class="msg-bubble {% if msg.user == user %}own{% endif %}">
+                <div class="msg-top">
+                  <a href="{% url 'profile' username=msg.user.username %}" class="msg-user">{{ msg.user.username }}</a>
+                  {% if msg.user == room.host %}<span class="msg-host">Host</span>{% endif %}
+                  <span class="msg-time">{{ msg.created_at|timesince }} ago</span>
+                  {% if msg.user == user %}
+                  <a href="{% url 'delete_message' msg.pk %}" class="msg-delete"
+                     onclick="return confirm('Delete this message?')">✕</a>
+                  {% endif %}
+                </div>
+                <div class="msg-text">{{ msg.body }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+          <div class="no-messages">💬 Be the first to start the discussion!</div>
+          {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="message-form-area">
+          <div class="msg-avatar">
+            {% if user.profile.avatar %}<img src="{{ user.profile.avatar.url }}" alt="">
+            {% else %}{{ user.username|first|upper }}{% endif %}
+          </div>
+          <form method="POST">
+            {% csrf_token %}
+            <textarea name="body" rows="2" placeholder="Share your thoughts... (Ctrl+Enter to send)"></textarea>
+            <button type="submit" class="btn btn-primary btn-sm">Send</button>
+          </form>
+        </div>
+        {% else %}
+        <div class="login-prompt">
+          <a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a> to join the discussion.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right: Members -->
+    <aside>
+      <div class="members-box">
+        <h3>Members ({{ room.member_count }})</h3>
+        <!-- Host first -->
+        <div class="member-item">
+          <div class="member-avatar">
+            {% if room.host.profile.avatar %}<img src="{{ room.host.profile.avatar.url }}" alt="">
+            {% else %}{{ room.host.username|first|upper }}{% endif %}
+          </div>
+          <div>
+            <a href="{% url 'profile' username=room.host.username %}" class="member-name">{{ room.host.username }}</a>
+            <span class="member-host-badge"> ★ Host</span>
+          </div>
+        </div>
+        {% for member in members %}
+          {% if member != room.host %}
+          <div class="member-item">
+            <div class="member-avatar">
+              {% if member.profile.avatar %}<img src="{{ member.profile.avatar.url }}" alt="">
+              {% else %}{{ member.username|first|upper }}{% endif %}
+            </div>
+            <a href="{% url 'profile' username=member.username %}" class="member-name">{{ member.username }}</a>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </aside>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Auto-scroll messages to bottom
+  var list = document.getElementById('msgList');
+  if (list) list.scrollTop = list.scrollHeight;
+</script>
+{% endblock %}

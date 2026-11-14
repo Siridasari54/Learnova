@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Delete Room – Learnova{% endblock %}
+
+{% block content %}
+<div class="page-wrapper" style="max-width:480px; margin:0 auto;">
+  <div class="form-card" style="text-align:center;">
+    <div style="font-size:2.5rem; margin-bottom:12px;">🗑️</div>
+    <h2>Delete Room</h2>
+    <p class="subtitle">This cannot be undone. All messages and memberships will be lost.</p>
+
+    <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:16px; margin:16px 0;">
+      <strong style="font-size:1.1rem; color:#dc3545;">{{ room.name }}</strong>
+      {% if room.topic %}<div style="color:#7b7b9b; font-size:0.85rem; margin-top:4px;">{{ room.topic.name }}</div>{% endif %}
+      <div style="font-size:0.85rem; color:#7b7b9b; margin-top:8px;">
+        👥 {{ room.member_count }} members &nbsp; 💬 {{ room.message_count }} messages
+      </div>
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <a href="{% url 'room_detail' room.pk %}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Study Rooms – Learnova{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+  <div class="dashboard-grid">
+
+    <!-- Topic sidebar -->
+    <aside class="sidebar">
+      <h3>Topics</h3>
+      <a href="{% url 'room_list' %}" class="topic-link {% if not topic_filter %}active{% endif %}">
+        All <span class="topic-count">{{ total_rooms }}</span>
+      </a>
+      {% for topic in topics %}
+      <a href="{% url 'room_list' %}?topic={{ topic.name }}"
+         class="topic-link {% if topic_filter == topic.name %}active{% endif %}">
+        {{ topic.name }}<span class="topic-count">{{ topic.room_count }}</span>
+      </a>
+      {% endfor %}
+    </aside>
+
+    <!-- Rooms -->
+    <main>
+      <div class="section-header">
+        <div>
+          <h2>Study Rooms</h2>
+          <span class="badge badge-muted">{{ room_count }} found</span>
+        </div>
+        {% if user.is_authenticated %}
+        <a href="{% url 'create_room' %}" class="btn btn-primary btn-sm">+ Create Room</a>
+        {% endif %}
+      </div>
+
+      <!-- Search -->
+      <form method="GET" style="display:flex; gap:8px; margin-bottom:16px;">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search rooms or topics..."
+               style="flex:1; padding:9px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:0.9rem; outline:none;">
+        {% if topic_filter %}<input type="hidden" name="topic" value="{{ topic_filter }}">{% endif %}
+        <button type="submit" class="btn btn-primary">Search</button>
+        {% if query or topic_filter %}<a href="{% url 'room_list' %}" class="btn btn-outline">Clear</a>{% endif %}
+      </form>
+
+      {% if rooms %}
+      <div class="rooms-grid">
+        {% for room in rooms %}
+        <div class="room-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            {% if room.topic %}<span class="room-card-topic">{{ room.topic.name }}</span>{% endif %}
+            {% if user == room.host %}
+            <div style="display:flex; gap:5px;">
+              <a href="{% url 'edit_room' room.pk %}" class="btn btn-outline btn-sm">Edit</a>
+              <a href="{% url 'delete_room' room.pk %}" class="btn btn-danger btn-sm">Del</a>
+            </div>
+            {% endif %}
+          </div>
+          <div class="room-card-title"><a href="{% url 'room_detail' room.pk %}">{{ room.name }}</a></div>
+          {% if room.description %}
+          <div class="room-card-desc">{{ room.description|truncatechars:90 }}</div>
+          {% endif %}
+          <div class="room-card-meta">
+            <div class="room-host">
+              <div class="avatar-xs">{{ room.host.username|first|upper }}</div>
+              <a href="{% url 'profile' username=room.host.username %}" style="color:var(--text-muted);">{{ room.host.username }}</a>
+            </div>
+            <span>👥 {{ room.member_count }} &nbsp; 💬 {{ room.message_count }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <h3>No rooms found</h3>
+        <p>Try a different search or topic filter.</p>
+      </div>
+      {% endif %}
+    </main>
+
+    <!-- Activity -->
+    <aside class="activity-panel">
+      <h3>Recent Activity</h3>
+      {% for msg in recent_messages %}
+      <div class="activity-item">
+        <div class="activity-avatar">{{ msg.user.username|first|upper }}</div>
+        <div class="activity-info">
+          <a href="{% url 'profile' username=msg.user.username %}">{{ msg.user.username }}</a>
+          in <a href="{% url 'room_detail' msg.room.pk %}" class="room-name">{{ msg.room.name }}</a>
+          <div class="msg-preview">{{ msg.body }}</div>
+          <div class="activity-time">{{ msg.created_at|timesince }} ago</div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="color:var(--text-muted); font-size:0.85rem;">No activity yet.</p>
+      {% endfor %}
+    </aside>
+
+  </div>
+</div>
+{% endblock %}

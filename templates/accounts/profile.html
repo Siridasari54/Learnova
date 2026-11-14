@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.username }}'s Profile – Learnova{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+  <div class="profile-wrapper">
+
+    <!-- Profile card -->
+    <aside class="profile-card">
+      <div class="profile-avatar-wrap">
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" alt="{{ profile_user.username }}" class="profile-avatar">
+        {% else %}
+          <div class="profile-avatar-initials">{{ profile_user.username|first|upper }}</div>
+        {% endif %}
+        {% if user == profile_user %}
+        <a href="{% url 'edit_profile' %}" class="profile-edit-btn" title="Edit Profile">✏️</a>
+        {% endif %}
+      </div>
+
+      <div class="profile-name">
+        {% if profile_user.get_full_name %}{{ profile_user.get_full_name }}{% else %}{{ profile_user.username }}{% endif %}
+      </div>
+      <div class="profile-username">@{{ profile_user.username }}</div>
+
+      {% if profile.bio %}
+      <div class="profile-bio">{{ profile.bio }}</div>
+      {% endif %}
+
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="num">{{ hosted_rooms.count }}</div>
+          <div class="label">Created</div>
+        </div>
+        <div class="profile-stat">
+          <div class="num">{{ joined_rooms.count }}</div>
+          <div class="label">Joined</div>
+        </div>
+        <div class="profile-stat">
+          <div class="num">{{ recent_messages.count }}</div>
+          <div class="label">Messages</div>
+        </div>
+      </div>
+
+      {% if user == profile_user %}
+      <a href="{% url 'edit_profile' %}" class="btn btn-outline" style="width:100%;">Edit Profile</a>
+      {% endif %}
+    </aside>
+
+    <!-- Profile content -->
+    <div class="profile-content">
+
+      {% if hosted_rooms %}
+      <div class="profile-section">
+        <h3>🏠 Created Rooms ({{ hosted_rooms.count }})</h3>
+        <div class="rooms-grid">
+          {% for room in hosted_rooms %}
+          <div class="room-card">
+            {% if room.topic %}<span class="room-card-topic">{{ room.topic.name }}</span>{% endif %}
+            <div class="room-card-title"><a href="{% url 'room_detail' room.pk %}">{{ room.name }}</a></div>
+            <div class="room-card-meta">
+              <span>👥 {{ room.member_count }}</span>
+              <span>💬 {{ room.message_count }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if joined_rooms %}
+      <div class="profile-section">
+        <h3>🎓 Joined Rooms ({{ joined_rooms.count }})</h3>
+        <div class="rooms-grid">
+          {% for room in joined_rooms %}
+          <div class="room-card">
+            {% if room.topic %}<span class="room-card-topic">{{ room.topic.name }}</span>{% endif %}
+            <div class="room-card-title"><a href="{% url 'room_detail' room.pk %}">{{ room.name }}</a></div>
+            <div class="room-card-meta">
+              <div class="room-host">
+                <div class="avatar-xs">{{ room.host.username|first|upper }}</div>
+                {{ room.host.username }}
+              </div>
+              <span>👥 {{ room.member_count }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if recent_messages %}
+      <div class="profile-section">
+        <h3>💬 Recent Messages</h3>
+        {% for msg in recent_messages %}
+        <div class="profile-msg-item">
+          <div>In <a href="{% url 'room_detail' msg.room.pk %}" class="room-ref">{{ msg.room.name }}</a></div>
+          <div class="msg-body">"{{ msg.body|truncatechars:100 }}"</div>
+          <div class="msg-time">{{ msg.created_at|timesince }} ago</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if not hosted_rooms and not joined_rooms %}
+      <div class="empty-state">
+        <div class="icon">🚀</div>
+        <h3>No activity yet</h3>
+        <p>Start by joining or creating a study room!</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">Browse Rooms</a>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
